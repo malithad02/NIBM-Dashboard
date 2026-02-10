@@ -4,15 +4,13 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 
-# ---------------------------------------------------------
+
 # 1. SETUP APP
-# ---------------------------------------------------------
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CERULEAN])
 server = app.server  # Required for Render deployment
 
-# ---------------------------------------------------------
+
 # 2. LAYOUT
-# ---------------------------------------------------------
 app.layout = dbc.Container([
     # Title
     dbc.Row(dbc.Col(html.H1(" Data Science Student's Literacy Dashboard", className="text-center mt-4 mb-4"))),
@@ -33,16 +31,14 @@ app.layout = dbc.Container([
     ])
 ], fluid=True)
 
-# ---------------------------------------------------------
+
 # 3. LOGIC (CALLBACKS)
-# ---------------------------------------------------------
 @app.callback(
     [Output('scatter', 'figure'), Output('bar', 'figure'),
      Output('box', 'figure'), Output('violin', 'figure')],
     [Input('timer', 'n_intervals')]
 )
 def update_graphs(n):
-    # I found your link from your screenshot and fixed it to 'output=csv'
     url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1gF4lUrUv081mm-qt5Vy4a5iSeY00W-vuSZ5QSt8YfNRwWpcfzXdBrUwu9waV_xL1H9M0T8iL8GeI/pub?output=csv"
     
     try:
@@ -54,12 +50,9 @@ def update_graphs(n):
         df.columns = df.columns.str.strip()
         
         # 2. FIX DUPLICATE NAMES (The "Magic Fix")
-        # Google Sheets sends multiple columns named "Proficiency". 
-        # We rename them by their POSITION (index) to avoid confusion.
         cols = list(df.columns)
         if cols.count('Proficiency') > 1:
             # We assume the order is: Pandas -> Scikit -> Plotly -> TensorFlow
-            # Note: You might need to adjust these numbers if your sheet changes
             df.columns.values[9] = 'Proficiency_Pandas'
             df.columns.values[10] = 'Proficiency_Scikit'
             df.columns.values[11] = 'Proficiency_Plotly'
@@ -105,4 +98,5 @@ def update_graphs(n):
         return px.scatter(title=f"Error: {e}"), px.bar(), px.box(), px.violin()
 
 if __name__ == '__main__':
+
     app.run(debug=True)
